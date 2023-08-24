@@ -1,0 +1,5 @@
+*.o
+.gitignore
+kernel.elf
+build/
+.vscode/
