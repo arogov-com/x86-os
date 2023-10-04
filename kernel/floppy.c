@@ -34,16 +34,17 @@ typedef struct {
         sector_per_track;
 }discopt_t;
 
-int LBAtoCHS(unsigned long lba, int *cylinder, int *head, int *sector, discopt_t *diskopt) {
-    *cylinder = lba / (diskopt->heads_per_cyinder * diskopt->sector_per_track);
-    int tmp = lba % (diskopt->heads_per_cyinder * diskopt->sector_per_track);
-    *head = tmp / diskopt->sector_per_track;
-    *sector = tmp % diskopt->sector_per_track + 1;
-}
 
 IRQ_HANDLER(irq_fdc) {
     printf("\n***FLOPPY***\n");
     irq_fdc_wait = 1;
+}
+
+void LBAtoCHS(unsigned long lba, int *cylinder, int *head, int *sector, discopt_t *diskopt) {
+    *cylinder = lba / (diskopt->heads_per_cyinder * diskopt->sector_per_track);
+    int tmp = lba % (diskopt->heads_per_cyinder * diskopt->sector_per_track);
+    *head = tmp / diskopt->sector_per_track;
+    *sector = tmp % diskopt->sector_per_track + 1;
 }
 
 void fdc_irq_wait(void) {

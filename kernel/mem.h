@@ -1,13 +1,16 @@
-#include "kernel.h"
+#include <stdint.h>
+
+#define KAM_SIZE 57088
 
 typedef struct {
-    unsigned long page;
-    unsigned long addr;
-    unsigned long size;
-    unsigned pages_used:24;
-    unsigned reserved:8;
-}kam_t;
+    uint32_t page;
+    void *addr;
+    uint32_t size;
+    uint32_t pages_used:24;
+    uint32_t used:8;
+}__attribute__((packed)) kam_t;
 
-void kam_init(void);
+void kam_init(void *kam_address, unsigned long size);
 unsigned long get_memory_count();
 void *kealloc(unsigned long size);
+void kefree(void *ptr);

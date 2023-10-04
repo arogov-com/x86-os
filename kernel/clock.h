@@ -1,10 +1,10 @@
 #define RTC_IRQ8_256HZ		0x1	//3,90625ms
 #define RTC_IRQ8_128HZ		0x2	//7,8125ms
-#define RTC_IRQ8_8192HZ		0x3	//122,070mcs
-#define RTC_IRQ8_4094HZ		0x4	//244,141mcs
-#define RTC_IRQ8_2048HZ		0x5	//488,281mcs
-#define RTC_IRQ8_1024HZ		0x6	//976,5625mcs
-#define RTC_IRQ8_512HZ		0x7	//1,953125
+#define RTC_IRQ8_8192HZ		0x3	//122,070us
+#define RTC_IRQ8_4094HZ		0x4	//244,141us
+#define RTC_IRQ8_2048HZ		0x5	//488,281us
+#define RTC_IRQ8_1024HZ		0x6	//976,5625us
+#define RTC_IRQ8_512HZ		0x7	//1,953125 ms
 //#define RTC_IRQ8_256HZ		0x8	//3,90625
 //#define RTC_IRQ8_128HZ		0x9	//7,8125ms
 #define RTC_IRQ8_64HZ		0xA	//15,625ms

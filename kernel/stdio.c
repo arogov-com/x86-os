@@ -86,7 +86,7 @@ char getch(void) {
     static unsigned char shift = 0;
 
     while(1) {
-        scancode = readkey();
+        read(0, &scancode, 1);
         if(scancode >= 0x47 && scancode <= 0x53 && get_num_state()) {
             switch(scancode) {
                 case VK_NUM_7: return scancodes[0x8]; break;
@@ -102,18 +102,25 @@ char getch(void) {
                 case VK_NUM_DOT: return scancodes[0x34]; break;
             }
         }
-        if(scancode == VK_SHIFT || scancode == VK_RSHIFT) shift = 1;
-        else if(scancode == VK_SHIFT + KEY_UP || scancode == VK_RSHIFT + KEY_UP) shift = 0;
+        if(scancode == VK_SHIFT || scancode == VK_RSHIFT) {
+            shift = 1;
+        }
+        else if(scancode == VK_SHIFT + KEY_UP || scancode == VK_RSHIFT + KEY_UP) {
+            shift = 0;
+        }
         else if(scancode < KEY_UP) {
-            if(shift) return scancodes_shifted[scancode];
-            else return scancodes[scancode];
+            if(shift) {
+                return scancodes_shifted[scancode];
+            }
+            else {
+                return scancodes[scancode];
+            }
         }
     }
 }
 
 int gets(char *str) {
     int i = 0;
-    int x, y;
     char c;
     while((c = getch()) != 0xA) {
         if(c == 0x8) {
@@ -132,7 +139,7 @@ int gets(char *str) {
     putchar('\n');
     str[i] = 0;
     return i;
- }
+}
 
 int printf(const char* format, ...) {
     char buff[12], str[512];

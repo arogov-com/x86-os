@@ -12,7 +12,7 @@ void irq_dummy() {
 
 int set_interrupt(unsigned char vector, void (*func)(), unsigned char type, int dpl, int overwrite) {
     idt_descriptor_t *idt = (idt_descriptor_t*)(IDT_TABLE + (unsigned long)vector * 8);
-    if(idt->present == 1 && !overwrite) return 0;
+    if(idt->present == 1 && !overwrite) return 1;
     idt->low_addr = (unsigned long)func & 0x0000FFFF;
     idt->selector = SYS_CODE_SELECTOR;
     idt->reserved = 0;
@@ -21,6 +21,7 @@ int set_interrupt(unsigned char vector, void (*func)(), unsigned char type, int 
     idt->dpl = dpl;
     idt->present = 1;
     idt->high_addr = (unsigned short)(((unsigned long)func & 0xFFFF0000) >> 16);
+    return 0;
 }
 
 void *get_interrupt(unsigned char vector) {
@@ -45,7 +46,7 @@ void interrupt_disable() {
 
 int mask_irq(int irq, int enable) {
     if(irq > 15) {
-        return 0;
+        return 1;
     }
     unsigned short port = PIC1_PORT_DATA;
     unsigned char mask = 1, old;
@@ -57,6 +58,7 @@ int mask_irq(int irq, int enable) {
     mask = mask << irq;
     mask = enable ? ((~mask) & old) : (mask | old);
     outportb(port, mask);
+    return 0;
 }
 
 void init_pic(int pic1_base, int pic2_base) {

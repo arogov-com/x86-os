@@ -7,13 +7,14 @@ source_files := $(wildcard kernel/*.c)
 object_files := $(patsubst %.c, %.o, $(source_files))
 
 CC=gcc
-CFLAGS=-m32 -fno-pie -ffreestanding -c -fno-omit-frame-pointer -fno-stack-protector -fno-asynchronous-unwind-tables
+CFLAGS=-m32 -fno-pie -ffreestanding -c -fno-omit-frame-pointer -fno-stack-protector -fno-asynchronous-unwind-tables -Wall
 
 default: $(kernel)
 
 clean:
 	- @rm -fr build
 	- @rm -f kernel/*.o
+	- @rm $(kernel)
 
 qemu: $(iso)
 	qemu-system-i386 -cdrom $(iso) -vga std -s -monitor stdio -accel kvm

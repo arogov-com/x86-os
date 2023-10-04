@@ -1,6 +1,5 @@
 #include "cpu.h"
 #include "ioports.h"
-#include "stdio.h"
 
 int cpuid(unsigned long *eax, unsigned long *ebx, unsigned long *ecx, unsigned long *edx) {
     asm volatile("cpuid":"=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx):"a"(*eax));
@@ -27,7 +26,7 @@ unsigned long get_processor_speed(void) {
 
     spd = ((((unsigned long long)edx2) << 32) | ((unsigned long long)eax2)) - ((((unsigned long long)edx1) << 32) | ((unsigned long long)eax1));
 
-    spd = ((unsigned long)spd) / 18,20648193359375;
+    spd = ((unsigned long)spd) / 18.20648193359375;
     return (unsigned long)spd;
 }
 
