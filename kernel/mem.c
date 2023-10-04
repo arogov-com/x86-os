@@ -27,34 +27,6 @@ void kam_init(void) {
     memset((void*)KAM_ADDR, 0, HEEP_START - KAM_ADDR - 0x1000);
 }
 
-/*
-void *kealloc(unsigned long size)
- {
-  if(!size)return (void*)0;
-  unsigned long *UPMM=UPMM_ADDR;
-  unsigned long pages=(size>>12)+1,mask,founded,addr;
-  KAM *kam=(KAM*)KAM_ADDR;
-
-  unsigned long i,j,n=0;
-  for(i=0;i!=32768;++i)
-   {
-    for(j=0,mask=0x1;j!=32;++j,mask=mask<<1)
-     {
-      if(!(UPMM[i]&mask) && ++founded)
-       {
-        if(founded==pages)
-         {
-          addr=0x1000*((i<<5)+j-pages+1);
-          for(n=0;n!=pages;++n)assign_page(addr+(n<<12),addr+(n<<12),1,0);
-          return addr;
-         }
-       }
-      else founded=0;
-     }
-   }
-  return (void*)0;
- }
-*/
 void *kealloc(unsigned long size) {
     if(!size) {
         return (void*)0;

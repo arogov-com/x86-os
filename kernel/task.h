@@ -69,3 +69,4 @@ int get_proc_struct(int pid, process_t *store);
 int get_proc_times(unsigned int pid);
 
 int get_current_proc_vtty();
+int kill_proc(int pid);

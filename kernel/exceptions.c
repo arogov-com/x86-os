@@ -178,7 +178,7 @@ EXCEPTION_HANDLER_ERRCODE(PF) {
     asm volatile("mov %eax, addr");
     char a = get_vtty_attribute();
     set_vtty_attributeex(FOREGROUND_RED | LIGHT, 0);
-    assign_page((void*)addr, (void*)addr, 1, 1);
+    // assign_page((void*)addr, (void*)addr, 1, 1);
     int slen = sprintf(excception_buffer, exceptions_messages[14], errorcode, addr);
     vtty_write(0, excception_buffer, slen);
     set_vtty_attributeex(a, 0);

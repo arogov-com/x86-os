@@ -1,6 +1,5 @@
 #include "cpu.h"
 #include "ioports.h"
-#include "stdio.h"
 
 int cpuid(unsigned long *eax, unsigned long *ebx, unsigned long *ecx, unsigned long *edx) {
     asm volatile("cpuid":"=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx):"a"(*eax));

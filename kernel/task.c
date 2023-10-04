@@ -120,11 +120,20 @@ int get_proc_times(unsigned int pid) {
     return tmp->times;
  }
 
-// int remove_proc(int pid) {
-//     process_t *tmp = proc_list;
-//     while (tmp->id != pid) {
-//         tmp = tmp->right;
-//         if(tmp == proc_list) return -1;
-//     }
-
-// }
+int kill_proc(int pid) {
+    asm volatile("cli");
+    process_t *tmp = proc_list;
+    while (tmp->id != pid) {
+        tmp = tmp->right;
+        if(tmp == proc_list) return -1;
+    }
+    if(tmp != proc_list) {
+        memcpy(tmp, tmp->right, sizeof(process_t));
+        asm volatile("sti");
+        return 0;
+    }
+    else {
+        asm volatile("sti");
+        return 1;
+    }
+}

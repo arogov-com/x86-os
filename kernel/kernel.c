@@ -62,28 +62,6 @@ void heli2_thread() {
     }
 }
 
-// void init() {
-//     vtty_write(0, "Starting processes\n", 19);
-
-//     kthread(heli_task, (void *)0x150000, 1);
-//     kthread(proc1, (void *)0x160000, 1);
-//     //kthread(proc1, 0x140000, 1);
-
-//     vtty_write(0, "Going to endless loop\n", 22);
-//     int i = 0;
-//     PROCESS tmp0, tmp1, tmp2;
-//     while(1);/*
-//    {
-//     get_proc_struct(1, &tmp0);
-//     get_proc_struct(2, &tmp1);
-//     get_proc_struct(3, &tmp2);
-//     printf("ESP:%X | EIP:%X | PID:%i | TIME:%i\n", tmp0.context.esp, tmp0.context.eip, tmp0.id,tmp0.times);
-//     printf("ESP:%X | EIP:%X | PID:%i | TIME:%i\n", tmp1.context.esp, tmp1.context.eip, tmp1.id,tmp1.times);
-//     printf("ESP:%X | EIP:%X | PID:%i | TIME:%i\n**********************\n", tmp2.context.esp, tmp2.context.eip, tmp2.id,tmp2.times);
-//     timer_tick(100);
-//    }*/
-// }
-
 multiboot_header_t multiboot_header __attribute__((section(".multiboot_header"))) = {0xe85250d6, 0x0, 0x00000018, 0x17adaf12, 0x0, 0x00000008};
 
 char buff[512];
@@ -190,44 +168,6 @@ void kernel_main() {
     printf("Initialize keyboard\n");
     keyboard_init();
 
-    // datetime_t dt;
-    // gettime(&dt);
-    // printf("Date now is %i.%i.%i %i:%i:%i\n", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
-
-    // for(i = 0; i != 1000; ++i) {
-    //     timer_tick(1000);
-    //     printf("PIT tick %i\n", i);
-    // }
-// gdt_tss_t *tss = (gdt_tss_t*)PROCESS_LIST;
-// tss->prev = 0;
-// tss->esp0 = 0x800000;
-// tss->ss0 = 0x18;
-// tss->esp1 = 0x800000;
-// tss->ss1 = 0x18;
-// tss->esp2 = 0x800000;
-// tss->ss2 = 0x10;
-// tss->cr3 = PDE_ADDR;
-// tss->eip = kernel_thread;
-// tss->eflags = 0;
-// tss->eax = 0;
-// tss->ecx = 0;
-// tss->edx = 0;
-// tss->ebx = 0;
-// tss->esp = 0x800000;
-// tss->ebp = 0;
-// tss->esi = 0;
-// tss->edi = 0;
-// tss->cs = 0x10;
-// tss->es = 0x18;
-// tss->ss = 0x18;
-// tss->ds = 0x18;
-// tss->fs = 0x18;
-// tss->gs = 0x18;
-// tss->ldt = 0x10;
-// tss->ssp = 0x10;
-// tss->iopb = 0xFFFFFFFF;
-// asm volatile("mov $0x20, %eax \n ltr %ax \n jmp $0x20,$0");
-
     printf("Find ACPI:\n");
     rsdp_t *rsdp = (rsdp_t *)find_rsdp((void *)RSDP_ADDR_START, (void *)RSDP_ADDR_END);
     if(!rsdp) {
@@ -245,7 +185,6 @@ void kernel_thread() {
     printf("Kernel thread has started\n");
 
     int pid = kthread(shell, (void *)0xA00000, 0);
-    // int pid = kthread(heli_thread, (void *)0xA00000, 0);
     printf("Shell thread started PID = %X\n", pid);
 
     pid = kthread(heli2_thread, (void *)0xB00000, 0);
@@ -253,6 +192,10 @@ void kernel_thread() {
 
     pid = kthread(heli_thread, (void *)0xC00000, 0);
     printf("Heli2 thread started PID = %X\n", pid);
+
+    timer_tick(5000);
+
+    kill_proc(pid);
 
     while(1);
 }
