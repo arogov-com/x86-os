@@ -43,13 +43,13 @@ typedef struct {
     unsigned global:1;    //1 - Global page (TBL is not clean when task switch)
     unsigned available:3;
     unsigned address:20;  //Higher 20 bits of physicly address
-}PAGE_TABLE;
+}page_table_t;
 
-void pde_init(void);                                      //Initialize Page Directory
-void get_pde_entry(int number, page_dir_t *store);           //Store PDE[number] in "&store"
-void get_pte_entry(int table, int page, PAGE_TABLE *store); //Store PTE[page] in "&store"
-void load_pde(void *addr);                                //Load PDE address to CR3 (DONT FORGET DISABLE INTERRUPT)
-void paging_enable(int enable);                           //Enable page translation (DONT FORGET DISABLE INTERRUPT)
+void pde_init(void);                                          //Initialize Page Directory
+void get_pde_entry(int number, page_dir_t *store);            //Store PDE[number] in "&store"
+void get_pte_entry(int table, int page, page_table_t *store); //Store PTE[page] in "&store"
+void load_pde(void *addr);                                    //Load PDE address to CR3 (DONT FORGET DISABLE INTERRUPT)
+void paging_enable(int enable);                               //Enable page translation (DONT FORGET DISABLE INTERRUPT)
 
 int create_pde(unsigned int number, int mod_if_exists, int options, int cache, void *page_table);
 int create_pte(unsigned int table, unsigned int page, int mod_if_exists, int options, int cache, void *virtual);
@@ -57,10 +57,10 @@ int create_pte(unsigned int table, unsigned int page, int mod_if_exists, int opt
 int clear_pde(unsigned int number);
 int clear_pte(unsigned int table, unsigned int page);
 
-int assign_page(void *virtual, void *physical, int writable, int user); //Assign "virtual" address to "physical" address
-void free_page(void *virtual);                                       //Free page
+int assign_page(void *virtual, void *physical, int writable, int user);             //Assign "virtual" address to "physical" address
+void free_page(void *virtual);                                                      //Free page
 
-void *get_physical_address(void *virtual);                           //Get physical address from virtual
+void *get_physical_address(void *virtual);                                          //Get physical address from virtual
 unsigned long get_virtual_addresses(void *physical, unsigned long *virtuals_array); //Get virtual addresses list assigned to physical address (return value count of virt. addresses)
-unsigned long get_used_pages(void);                                  //Get used pages
-unsigned long find_free_page_sq(unsigned long count);                //Search continuous sequence with "count" free pages
+unsigned long get_used_pages(void);                                                 //Get used pages
+unsigned long find_free_page_sq(unsigned long count);                               //Search continuous sequence with "count" free pages

@@ -17,8 +17,6 @@ volatile char num_lock;
 volatile char caps_lock;
 volatile char scroll_lock;
 
-volatile char keyboard_type;
-
 void keyboard_init() {
     irq_keyboard_state = 0;
     scancode = 0;
@@ -56,9 +54,10 @@ IRQ_HANDLER(irq_keyboard) {
     if(e0_e1) {
         scancode = (((unsigned short)e0_e1) << 8) | sc;
         e0_e1 = 0;
-        //****************************************************
 
-        if(scancode == VK_SYS_RQ_MAKE) return;
+        if(scancode == VK_SYS_RQ_MAKE) {
+            return;
+        }
         else if(scancode == VK_SYS_RQ_REPEAT) {
             sysrq = 1;
             return;
@@ -71,7 +70,6 @@ IRQ_HANDLER(irq_keyboard) {
             sysrq_handler(scancode);
             return;
         }
-        //****************************************************
         irq_keyboard_state = 1;
         return;
     }

@@ -21,7 +21,10 @@
 #include "acpi.h"
 #include "multiboot.h"
 
+#define BUFFER_SIZE 512
+
 extern scheduler_t scheduler_perf;
+char buff[BUFFER_SIZE];
 
 void kernel_thread();
 
@@ -64,8 +67,6 @@ void heli2_thread() {
 
 multiboot_header_t multiboot_header __attribute__((section(".multiboot_header"))) = {0xe85250d6, 0x0, 0x00000018, 0x17adaf12, 0x0, 0x00000008};
 
-char buff[512];
-
 // __attribute__ ((naked))
 void kernel_main() {
     int i, blen;
@@ -87,21 +88,20 @@ void kernel_main() {
     set_vtty_attribute(FOREGROUND_GRAY | LIGHT);
     clrscr();
 
-    blen = sprintf(buff, "ASDF OS 0.1\n\nMemory count %i bytes\n", get_memory_count());
+    blen = snprintf(buff, BUFFER_SIZE, "ASDF OS 0.1\n\nMemory count %i bytes\n", get_memory_count());
     vtty_write(0, buff, blen);
 
     memset((void*)GDT_ADDR, 0, GDT_SIZE * sizeof(seg_descr_t));
-    set_descriptor((void*)GDT_ADDR, 0, 0, 0, 0, 0, 0, 0, 1, 0);                      // Null descriptor
-    set_descriptor((void*)GDT_ADDR, 1, 0, 0, 0, 0, 0, 0, 1, 0);                      // Null descriptor
+    set_descriptor((void*)GDT_ADDR, 0, 0, 0, 0, 0, 0, 0, 1, 0);                    // Null descriptor
+    set_descriptor((void*)GDT_ADDR, 1, 0, 0, 0, 0, 0, 0, 1, 0);                    // Null descriptor
     set_descriptor((void*)GDT_ADDR, 2, 0, 0xFFFFFF, 1, 0, 1, 1, 1, CODE_READABLE); // System code descriptor
     set_descriptor((void*)GDT_ADDR, 3, 0, 0xFFFFFF, 1, 0, 1, 1, 1, DATA_WRITABLE); // System data descriptor
-    set_descriptor((void*)GDT_ADDR, 4, (void *)PROCESS_LIST, sizeof(gdt_tss_t), 1, 0, 0, 0, 0, TASK_SEGMENT_INACTIVE);
-    lgdt((void*)GDT_ADDR, 0x2000);
+    lgdt((void*)GDT_ADDR, GDT_SIZE);
 
-    blen = sprintf(buff, "Page directory address: %X | Page tables start address: %X\n", PDE_ADDR, PTE_ADDR);
+    blen = snprintf(buff, BUFFER_SIZE, "Page directory address: %X | Page tables start address: %X\n", PDE_ADDR, PTE_ADDR);
     memset((void*)UPMM_ADDR, 0, 0x20000);
     pde_init();
-    for(i = 0; i != 0x1000000; i += 0x1000){
+    for(i = 0; i != 0x900000; i += 0x1000) {
         if(!assign_page((void*)i, (void*)i, 1, 0)) {
             panic("can\'t init system memory\n");
         }
@@ -109,12 +109,12 @@ void kernel_main() {
     vtty_write(0, buff, blen);
     vtty_write(0, "Enable page translation\n", sizeof("Enable page translation\n"));
     paging_enable(1);
-    kam_init();
+    kam_init((void *)KAM_ADDR, KAM_SIZE * sizeof(kam_t));
 
     vtty_write(0, "Initialize PIC\n", sizeof("Initialize PIC\n"));
     init_pic(0x20, 0x28);
 
-    blen = sprintf(buff, "Initialize interrupts:\n\
+    blen = snprintf(buff, BUFFER_SIZE, "Initialize interrupts:\n\
  Timer(IRQ0, Vector 0x20): 0x%x\n\
  Keyboard(IRQ1, Vector 0x21): 0x%x\n\
  Floppy (IRQ6, Vector 0x26): 0x%x\n\
@@ -130,16 +130,16 @@ void kernel_main() {
     set_interrupt(0x26, irq_fdc, TYPE_INTERRUPT, 0, 1);
     set_interrupt(0x28, RTC, TYPE_INTERRUPT, 0, 1);
 
-    blen = sprintf(buff, "System call: 0x%X\n", syscall_handler);
+    blen = snprintf(buff, BUFFER_SIZE, "System call: 0x%X\n", syscall_handler);
     vtty_write(0, buff, blen);
-    set_interrupt(0x80, syscall_handler, TYPE_TRAP, 3, 1);
     syscalls_init();
+    set_interrupt(0x80, syscall_handler, TYPE_TRAP, 3, 1);
 
-    blen = sprintf(buff, "Initialize scheduler. PROCESS list addr: %X\n", PROCESS_LIST);
+    blen = snprintf(buff, BUFFER_SIZE, "Initialize scheduler. PROCESS list addr: %X\n", PROCESS_LIST);
     vtty_write(0, buff, blen);
     init_scheduler((void *)PROCESS_LIST, MAX_PROC);
 
-    blen = sprintf(buff, "Initialize exceptions\n\
+    blen = snprintf(buff, BUFFER_SIZE, "Initialize exceptions\n\
  DE : 0x%X  |  TS : 0x%X  |  DB : 0x%X\n\
  NP : 0x%X  |  NMI: 0x%X  |  SS : 0x%X\n\
  BP : 0x%X  |  GP : 0x%X  |  OF : 0x%X\n\
@@ -150,7 +150,7 @@ void kernel_main() {
     vtty_write(0, buff, blen);
     init_exceptions();
 
-    blen = sprintf(buff, "Initialize IDT\n IDT address: 0x%X\n Limit: 0x%X\n", IDT_TABLE, 256 * 8 - 1);
+    blen = snprintf(buff, BUFFER_SIZE, "Initialize IDT\n IDT address: 0x%X\n Limit: 0x%X\n", IDT_TABLE, 256 * 8 - 1);
     vtty_write(0, buff, blen);
     idtr_init((void*)IDT_TABLE, 256 * 8 - 1);
 
@@ -169,33 +169,41 @@ void kernel_main() {
     keyboard_init();
 
     printf("Find ACPI:\n");
-    rsdp_t *rsdp = (rsdp_t *)find_rsdp((void *)RSDP_ADDR_START, (void *)RSDP_ADDR_END);
+    rsdp_t *rsdp = acpi_find_rsdp((void *)RSDP_ADDR_START, (void *)RSDP_ADDR_END);
     if(!rsdp) {
-        printf("  RSDP is not found\n");
+        printf(" RSDP is not found\n");
+    }
+    else if(acpi_chk_summ(rsdp, sizeof(rsdp_t))) {
+        printf(" Bad checksumm\n");
     }
     else {
-        printf("  RSDP: %X\n  RSDT: %X\n  Version: %i\n", rsdp, rsdp->rsdt_ptr, rsdp->version);
+        assign_page((void *)rsdp->rsdt_ptr, (void *)rsdp->rsdt_ptr, 0, 0);
+        printf(" RSDP: %X\n RSDT address: %X\n Version: %i\n", rsdp, rsdp->rsdt_ptr, rsdp->version);
+
+        rsdt_t *rsdt = (rsdt_t *)rsdp->rsdt_ptr;
+        printf(" DTs count: %i\n", (rsdt->header.length - sizeof(rsdt->header)) / 4);
+        acpi_process_rsdt(rsdt);
     }
 
-    kthread(kernel_thread, (void *)0x900000, 0);
+    void *kernel_thread_stack = kealloc(0x1000);
+    kthread(kernel_thread, kernel_thread_stack, 0);
     while(1);
 }
 
 void kernel_thread() {
     printf("Kernel thread has started\n");
 
-    int pid = kthread(shell, (void *)0xA00000, 0);
+    void *shell_stack = kealloc(0x1000);
+    int pid = kthread(shell, shell_stack, 0);
     printf("Shell thread started PID = %X\n", pid);
 
-    pid = kthread(heli2_thread, (void *)0xB00000, 0);
+    void *helli_stack = kealloc(0x1000);
+    pid = kthread(heli_thread, helli_stack, 0);
     printf("Heli thread started PID = %X\n", pid);
 
-    pid = kthread(heli_thread, (void *)0xC00000, 0);
+    void *heli2_stack = kealloc(0x1000);
+    pid = kthread(heli2_thread, heli2_stack, 0);
     printf("Heli2 thread started PID = %X\n", pid);
-
-    timer_tick(5000);
-
-    kill_proc(pid);
 
     while(1);
 }

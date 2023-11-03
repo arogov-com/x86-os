@@ -23,12 +23,12 @@
 #define BLINK 0x80
 
 typedef struct _VTTY {
-  int active;                          // TTY is active
-  int cursor;                          // Cursor position
-  char attribute;                      // Attribute byte
-  unsigned int read_buffer_max;        // Maximum bytes to read
-  char *video;                         // Screen image
-  char *read_buffer;                   // Reading buffer
+    int active;                          // TTY is active
+    int cursor;                          // Cursor position
+    char attribute;                      // Attribute byte
+    unsigned int read_buffer_max;        // Maximum bytes to read
+    char *video;                         // Screen image
+    char *read_buffer;                   // Reading buffer
 }VTTY;
 
 //Init start keys state and fill by 0x0 VTTY structure

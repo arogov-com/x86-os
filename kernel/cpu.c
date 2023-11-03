@@ -26,7 +26,7 @@ unsigned long get_processor_speed(void) {
 
     spd = ((((unsigned long long)edx2) << 32) | ((unsigned long long)eax2)) - ((((unsigned long long)edx1) << 32) | ((unsigned long long)eax1));
 
-    spd = ((unsigned long)spd) / 18,20648193359375;
+    spd = ((unsigned long)spd) / 18.20648193359375;
     return (unsigned long)spd;
 }
 

@@ -1,9 +1,7 @@
 #include <stdint.h>
 #include "kernel.h"
 
-// #define IRQ_HANDLER(func) __attribute__ ((naked)) void func() {asm volatile("pushal"); _##func(); asm volatile("movb $0x20, %al \n outb %al, $0x20 \n outb %al, $0xA0 \n mov 0xC(%esp), %esp \n sub $0x20, %esp \n popal \n iret \n");} void _##func()
 #define IRQ_HANDLER(func) __attribute__ ((naked)) void func() {asm volatile("pushal"); _##func(); asm volatile("movb $0x20, %al \n outb %al, $0x20 \n outb %al, $0xA0 \n mov 0xC(%esp), %eax \n sub $0x20, %eax \n mov %eax, 0xC(%esp) \n mov %eax, %esp \n popal \n iret \n");} void _##func()
-// #define IRQ_HANDLER(func) __attribute__ ((naked)) void func() {asm volatile("pushal"); _##func(); asm volatile("movb $0x20, %al \n outb %al, $0x20 \n outb %al, $0xA0 \n mov 0xC(%esp), %esp \n popal \n iret \n");} void _##func()
 #define EXCEPTION_HANDLER(func) __attribute__ ((naked)) void func() {asm volatile("pushal"); _##func(); asm volatile("popal \n iret \n");} void _##func()
 #define EXCEPTION_HANDLER_ERRCODE(func) __attribute__ ((naked)) void func() {asm volatile("pop errorcode \n pushal"); _##func(); asm volatile("popal \n iret \n");} void _##func()
 

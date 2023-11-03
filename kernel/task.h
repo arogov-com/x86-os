@@ -61,12 +61,12 @@ typedef struct { // 8.2.1, page 3259
 } __attribute__((packed)) gdt_tss_t;
 
 void init_scheduler(void *process_list_addr, unsigned int maxproc);
-void *get_process_table(void);
-int kthread(void *entry_point, void *stack, int vttyn);
 void scheduler(void *esp);
 
+process_t *get_process_table();
 int get_proc_struct(int pid, process_t *store);
 int get_proc_times(unsigned int pid);
-
 int get_current_proc_vtty();
-int kill_proc(int pid);
+
+int kthread(void *entry_point, void *stack, int vttyn);
+int kill_kthread(int pid);

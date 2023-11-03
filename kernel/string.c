@@ -74,7 +74,7 @@ int strcmpi(char *str1, char *str2) {
 
 char *strstr(char *str1, char *str2) {
     if(!str1 || !str2) return NULL;
-    int i, f;
+    int f;
     char *str3 = str2, *strr = 0;
     while(*str1) {
         if(!*str3) return f ? (strr) : (0);
@@ -86,7 +86,7 @@ char *strstr(char *str1, char *str2) {
 
 char *strstri(char *str1, char *str2) {
     if(!str1 || !str2) return NULL;
-    int i, f;
+    int f;
     char *str3 = str2, *strr = 0;
     while(*str1) {
         if(!*str3) return f ? (strr) : (0);

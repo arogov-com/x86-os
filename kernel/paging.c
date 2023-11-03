@@ -19,9 +19,9 @@ void get_pde_entry(int number, page_dir_t *store) {
     *(unsigned long*)store = *(unsigned long*)&pde[number];
 }
 
-void get_pte_entry(int table, int page, PAGE_TABLE *store) {
+void get_pte_entry(int table, int page, page_table_t *store) {
     page_dir_t *pde = (page_dir_t*)PDE_ADDR;
-    PAGE_TABLE *pte = (PAGE_TABLE*)(pde[table].address << 12);
+    page_table_t *pte = (page_table_t*)(pde[table].address << 12);
     *(unsigned long*)store = *(unsigned long*)&pte[page];
 }
 
@@ -73,7 +73,7 @@ int create_pte(unsigned int table, unsigned int page, int mod_if_exists, int opt
     page_dir_t *pde = (page_dir_t*)PDE_ADDR;
     if(!pde[table].present) return TABLE_NOT_PRESENT;
 
-    PAGE_TABLE *pte = (PAGE_TABLE*)(pde[table].address << 12);
+    page_table_t *pte = (page_table_t*)(pde[table].address << 12);
 
     if(pte[page].present && !mod_if_exists) return PTE_ALREADY_EXISTS;
 
@@ -112,7 +112,7 @@ int clear_pte(unsigned int table, unsigned int page) {
     if(table > 1023) return BOUND_ERROR;
     page_dir_t *pde = (page_dir_t*)PDE_ADDR;
     if(!pde[table].present) return TABLE_NOT_PRESENT;
-    PAGE_TABLE *pte = (PAGE_TABLE*)(pde[table].address << 12);
+    page_table_t *pte = (page_table_t*)(pde[table].address << 12);
     if(!pte[page].present) return 1;
     pte[page].present = 0;
     void *addr = (void*)( (table << 22) | (page << 12) );
@@ -136,7 +136,7 @@ int assign_page(void *virtual, void *physical, int writable, int user) {
     pde[table].user = user;
     pde[table].writable = writable;
 
-    PAGE_TABLE *pte = (PAGE_TABLE*)(pde[table].address << 12);
+    page_table_t *pte = (page_table_t*)(pde[table].address << 12);
 
     pte[page].present = 1;
     pte[page].user = user;
@@ -155,7 +155,7 @@ void free_page(void *virtual) {
     UPMM[pn >> 5] = UPMM[pn >> 5] & (~(1UL << (pn % 32)));
 
     page_dir_t *pde = (page_dir_t*)PDE_ADDR;
-    PAGE_TABLE *pte = (PAGE_TABLE*)(pde[table].address << 12);
+    page_table_t *pte = (page_table_t*)(pde[table].address << 12);
     *(unsigned long*)&pte[page] = 0;
     --memory.pages_used;
 }
@@ -167,18 +167,18 @@ void *get_physical_address(void *virtual) {
   unsigned long pn = (table << 10) + page;
   if(!(UPMM[pn >> 5] & (1UL << (pn % 32)))) return NULL;
   page_dir_t *pde = (page_dir_t*)PDE_ADDR;
-  PAGE_TABLE *pte = (PAGE_TABLE*)(pde[table].address << 12);
+  page_table_t *pte = (page_table_t*)(pde[table].address << 12);
   return (void *)(pte[page].address << 12);
  }
 
 unsigned long get_virtual_addresses(void *physical, unsigned long *virtuals_array) {
     page_dir_t *pde = (page_dir_t*)PDE_ADDR;
-    PAGE_TABLE *pte;
+    page_table_t *pte;
     unsigned long i, j, c = 0;
     for(i = 0; i != 1024; ++i) {
         if(pde[i].present)
         for(j = 0; j != 1024; ++j) {
-            pte = (PAGE_TABLE*)(pde[i].address << 12);
+            pte = (page_table_t*)(pde[i].address << 12);
             if(pte[j].present && (void *)(pte[j].address << 12) == physical)
                 virtuals_array[c++]=(i<<22)|(j<<12);
         }
@@ -191,16 +191,20 @@ unsigned long get_used_pages(void) {
 }
 
 unsigned long find_free_page_sq(unsigned long count) {
-    if(!count) return (unsigned long)-1;
+    if(!count) {
+        return (unsigned long)-1;
+    }
     unsigned long *UPMM = (void *)UPMM_ADDR;
-    unsigned long mask, founded = 0, addr;
-    unsigned long i, j, n = 0;
+    unsigned long mask, found = 0;
+    unsigned long i, j;
     for(i = 0; i != 32768; ++i) {
         for(j = 0, mask = 0x1; j != 32; ++j, mask = mask << 1) {
-            if(!(UPMM[i] & mask) && ++founded) {
-                if(founded == count) return ((i << 5) + j - count + 1);
+            if(!(UPMM[i] & mask) && ++found) {
+                if(found == count) {
+                    return ((i << 5) + j - count + 1);
+                }
             }
-            else founded=0;
+            else found = 0;
         }
     }
 

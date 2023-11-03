@@ -22,13 +22,6 @@ void init_scheduler(void *process_list_addr, unsigned int maxproc) {
 }
 
 void scheduler(void *context) {
-    // switch(current->id) {
-    //     case 1: *(char*)(0xb8000 + 73 * 2) = '1'; break;
-    //     case 2: *(char*)(0xb8000 + 73 * 2) = '2'; break;
-    //     case 3: *(char*)(0xb8000 + 73 * 2) = '3'; break;
-    //     case 4: *(char*)(0xb8000 + 73 * 2) = '4'; break;
-    //     default: break;
-    // }
     ++scheduler_perf.interrupts;
     --current->quantum;
     ++current->times;
@@ -41,11 +34,10 @@ void scheduler(void *context) {
                 next->quantum = QUANTUM;
                 return;
             }
-            if(next->state == STATE_READY && next->id) {  // Switch task if task ID != 0 and next task is ready
+            if(next->state == STATE_READY && next->id) {                                        // Switch task if task ID != 0 and next task is ready
                 memcpy((void *)(next->context.esp - 0x20), &next->context, sizeof(context_t));  // Copy context into next task stack
-                memcpy(&current->context, context, sizeof(context_t));  // Copy current context to process's structure
-                memcpy(context, &next->context, sizeof(context_t));     // Copy from next process structure to current context
-                // ((context_t*)context)->esp -= 0xc;
+                memcpy(&current->context, context, sizeof(context_t));                          // Copy current context to process's structure
+                memcpy(context, &next->context, sizeof(context_t));                             // Copy from next process structure to current context
 
                 next->state = STATE_ACTIVE;
                 next->quantum = QUANTUM;
@@ -55,17 +47,15 @@ void scheduler(void *context) {
                 current = next;
 
                 ++scheduler_perf.switches;
-                // asm volatile("xchg %bx, %bx");  // Bochs magic break
                 return;
             }
         }
     }
-    ++scheduler_perf.cont;
  }
 
 int kthread(void *entry_point, void *stack, int vttyn) {
     asm volatile("cli");
-    process_t *last = proc_list->left;  //Last item in proc list place behind proc_list
+    process_t *last = proc_list->left;                      //Last item in proc list place behind proc_list
 
     last->right = (process_t *)(last + sizeof(process_t));  //Create new item
     last->right->left = last;
@@ -91,9 +81,9 @@ int kthread(void *entry_point, void *stack, int vttyn) {
     last->right->times = 0;
     asm volatile("sti");
     return last->right->id;
- }
+}
 
-void *get_process_table(void) {
+process_t *get_process_table() {
     return proc_list;
 }
 
@@ -120,7 +110,7 @@ int get_proc_times(unsigned int pid) {
     return tmp->times;
  }
 
-int kill_proc(int pid) {
+int kill_kthread(int pid) {
     asm volatile("cli");
     process_t *tmp = proc_list;
     while (tmp->id != pid) {

@@ -5,6 +5,8 @@
 #include "syscounters.h"
 #include "stdio.h"
 
+#define EXCEPTION_BUFFER_SIZE 64
+
 extern exceptions_t exceptions;
 
 volatile unsigned long addr;
@@ -32,7 +34,7 @@ char *exceptions_messages[] = {
     "\n*** SIMD FLOATING-POINT ***\n"
 };
 
-char excception_buffer[64];
+char excception_buffer[EXCEPTION_BUFFER_SIZE];
 
 void init_exceptions(void) {
     set_interrupt(0x0, DE, TYPE_INTERRUPT, 0, 1);
@@ -140,7 +142,7 @@ EXCEPTION_HANDLER_ERRCODE(TS) {
     ++exceptions.TS;
     char a = get_vtty_attribute();
     set_vtty_attributeex(FOREGROUND_RED | LIGHT, 0);
-    int slen = sprintf(excception_buffer,exceptions_messages[10], errorcode);
+    int slen = snprintf(excception_buffer, EXCEPTION_BUFFER_SIZE, exceptions_messages[10], errorcode);
     vtty_write(0, excception_buffer, slen);
     set_vtty_attributeex(a, 0);
 }
@@ -149,7 +151,7 @@ EXCEPTION_HANDLER_ERRCODE(NP) {
     ++exceptions.NP;
     char a = get_vtty_attribute();
     set_vtty_attributeex(FOREGROUND_RED | LIGHT, 0);
-    int slen = sprintf(excception_buffer, exceptions_messages[11], errorcode);
+    int slen = snprintf(excception_buffer, EXCEPTION_BUFFER_SIZE, exceptions_messages[11], errorcode);
     vtty_write(0, excception_buffer, slen);
     set_vtty_attributeex(a, 0);
 }
@@ -158,7 +160,7 @@ EXCEPTION_HANDLER_ERRCODE(SS) {
     ++exceptions.SS;
     char a = get_vtty_attribute();
     set_vtty_attributeex(FOREGROUND_RED | LIGHT, 0);
-    int slen = sprintf(excception_buffer, exceptions_messages[12], errorcode);
+    int slen = snprintf(excception_buffer, EXCEPTION_BUFFER_SIZE, exceptions_messages[12], errorcode);
     vtty_write(0, excception_buffer, slen);
     set_vtty_attributeex(a, 0);
 }
@@ -167,7 +169,7 @@ EXCEPTION_HANDLER_ERRCODE(GP) {
     ++exceptions.GP;
     char a = get_vtty_attribute();
     set_vtty_attributeex(FOREGROUND_RED | LIGHT, 0);
-    int slen = sprintf(excception_buffer, exceptions_messages[13], errorcode);
+    int slen = snprintf(excception_buffer, EXCEPTION_BUFFER_SIZE, exceptions_messages[13], errorcode);
     vtty_write(0, excception_buffer, slen);
     set_vtty_attributeex(a, 0);
 }
@@ -179,7 +181,7 @@ EXCEPTION_HANDLER_ERRCODE(PF) {
     char a = get_vtty_attribute();
     set_vtty_attributeex(FOREGROUND_RED | LIGHT, 0);
     // assign_page((void*)addr, (void*)addr, 1, 1);
-    int slen = sprintf(excception_buffer, exceptions_messages[14], errorcode, addr);
+    int slen = snprintf(excception_buffer, EXCEPTION_BUFFER_SIZE, exceptions_messages[14], errorcode, addr);
     vtty_write(0, excception_buffer, slen);
     set_vtty_attributeex(a, 0);
 }
@@ -196,7 +198,7 @@ EXCEPTION_HANDLER_ERRCODE(AC) {
     ++exceptions.AC;
     char a = get_vtty_attribute();
     set_vtty_attributeex(FOREGROUND_RED | LIGHT, 0);
-    int slen = sprintf(excception_buffer, exceptions_messages[16], errorcode);
+    int slen = snprintf(excception_buffer, EXCEPTION_BUFFER_SIZE, exceptions_messages[16], errorcode);
     vtty_write(0, excception_buffer, slen);
     set_vtty_attributeex(a, 0);
 }

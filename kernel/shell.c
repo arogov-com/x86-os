@@ -33,12 +33,16 @@ void shell() {
     for(;;) {
         puts("ASDF OS# ");
         gets(c);
-        if(!strcmp(c, "clear"))clrscr();
+        if(!strcmp(c, "clear")) {
+            clrscr();
+        }
         if(!strcmp(c, "write")) {
             int writen = write(1, "Hello!\n", 7);
             printf("%i bytes writen\n", writen);
         }
-        if(!strcmp(c, "led")) set_led(LED_SCROLL | LED_NUM | LED_CAPS, 0);
+        if(!strcmp(c, "led")) {
+            set_led(LED_SCROLL | LED_NUM | LED_CAPS, 0);
+        }
         if(!strcmp(c, "fdd1")) {
             puts("Start engene...");
             if(fdc_drive_engene(1, 1)) {
@@ -150,21 +154,21 @@ void shell() {
                 int num = atoi(s);
                 page_dir_t pd;
                 get_pde_entry(num, &pd);
-                printf("PRES: %i\nWRIT: %i\nUSR: %i\nADDR: 0x%X\n",pd.present, pd.writable, pd.user, pd.address << 12);
+                printf("PRES: %i\nWRIT: %i\nUSR: %i\nADDR: 0x%X\n", pd.present, pd.writable, pd.user, pd.address << 12);
             }
         }
         if(strstr(c, "pte")) {
-            char *s = strchr(c, ' ') +1;
+            char *s = strchr(c, ' ') + 1;
             if(s) {
                 char *s1 = strchr(s, ' ');
                 if(s1) {
                     *s1 = 0;
                     ++s1;
                     int table = atoi(s);
-                    PAGE_TABLE pt;
+                    page_table_t pt;
                     int page = atoi(s1);
                     get_pte_entry(table, page, &pt);
-                    printf("TABLE: %i   PAGE: %i\nPRES: %i\nWRIT: %i\nUSR: %i\nADDR: 0x%X\n",table,page, pt.present, pt.writable, pt.user, pt.address << 12);
+                    printf("TABLE: %i   PAGE: %i\nPRES: %i\nWRIT: %i\nUSR: %i\nADDR: 0x%X\n", table,page, pt.present, pt.writable, pt.user, pt.address << 12);
                 }
             }
         }
@@ -242,7 +246,7 @@ void shell() {
         if(!strcmp(c, "interrupt")) {
             printf("Interrupt IRQ0:%X\n", get_interrupt(0x20));
         }
-        if(strstr(c,"gdt")) {
+        if(strstr(c, "gdt")) {
             char *s=strchr(c,' ');
             if(s) {
                 ++s;
@@ -259,10 +263,10 @@ void shell() {
             syscall(1, 0xAAAAAAAA, 0xBBBBBBBB, 0xDDDDDDDD);
         }
         if(!strcmp(c, "perf")) {
-            printf("interrupts.irq_keyboard = %i \n interrupts.irq_rtc = %i \n interrupts.irq_timer = %i\n", interrupts.irq_keyboard, interrupts.irq_rtc, interrupts.irq_timer);
-            printf("memory.mem_count = %i \n memory.mem_used = %i \n memory.pages_used = %i\n", memory.mem_count, memory.mem_used, memory.pages_used);
-            printf("syscalls.calls[3] = %i \n syscalls.calls[4] = %i\n", syscalls.calls[3], syscalls.calls[4]);
-            printf("scheduler_perf.cont = %i \n scheduler_perf.interrupts = %i \n scheduler_perf.switches = %i\n", scheduler_perf.cont, scheduler_perf.interrupts, scheduler_perf.switches);
+            printf("interrupts.irq_keyboard = %i\ninterrupts.irq_rtc = %i\ninterrupts.irq_timer = %i\n\n", interrupts.irq_keyboard, interrupts.irq_rtc, interrupts.irq_timer);
+            printf("memory.mem_count = %i\nmemory.mem_used = %i\nmemory.pages_used = %i\n\n", memory.mem_count, memory.mem_used, memory.pages_used);
+            printf("syscalls.calls[0] = %i\nsyscalls.calls[1] = %i\n\n", syscalls.calls[0], syscalls.calls[1]);
+            printf("scheduler_perf.interrupts = %i\nscheduler_perf.switches = %i\n", scheduler_perf.interrupts, scheduler_perf.switches);
         }
         if(strstr(c, "hex")) {
             char *s = strchr(c, ' ');

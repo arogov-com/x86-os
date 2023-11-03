@@ -2,9 +2,9 @@
 #include "string.h"
 
 typedef struct {
-    uint64_t irq_keyboard;
-    uint64_t irq_timer;
-    uint64_t irq_rtc;
+    uint32_t irq_keyboard;
+    uint32_t irq_timer;
+    uint32_t irq_rtc;
 }interrupts_t;
 
 typedef struct {
@@ -40,7 +40,7 @@ typedef struct {
 }syscalls_t;
 
 typedef struct {
-    uint64_t cont, interrupts, switches;
+    uint32_t interrupts, switches;
 }scheduler_t;
 
 void systat_init(void);
