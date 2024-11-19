@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #define RSDP_SIGNATURE_P2 0x20525450 // "PTR "
 #define RSDP_SIGNATURE_P1 0x20445352 // "RSD "
 #define RSDP_ALIGN        16

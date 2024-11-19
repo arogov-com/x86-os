@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #include <stdint.h>
 
 #define CODE                     0xb  // 1 1000 0xb

@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 int sprintf(char *str, char *format, ...);
 int snprintf(char *str, int size, char *format, ...);
 void putchar(char c);

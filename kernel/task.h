@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #include <stdint.h>
 
 #define STATE_NOT_EXIST 0x0

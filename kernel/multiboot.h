@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 typedef struct {
     uint32_t magic;     // Must be MULTIBOOT_MAGIC - see above.
     uint32_t flags;     // Feature flags.

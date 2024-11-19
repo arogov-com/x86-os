@@ -1,3 +1,5 @@
+# Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 kernel := kernel.elf
 iso := build/asdfos.iso
 linker_script := linker.ld

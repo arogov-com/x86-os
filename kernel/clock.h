@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #define RTC_IRQ8_256HZ		0x1	//3,90625ms
 #define RTC_IRQ8_128HZ		0x2	//7,8125ms
 #define RTC_IRQ8_8192HZ		0x3	//122,070us

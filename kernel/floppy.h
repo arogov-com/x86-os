@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 void irq_fdc(void);
 void fdc_irq_wait(void);
 char scan_flopies();

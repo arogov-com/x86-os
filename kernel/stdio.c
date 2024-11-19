@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #include "string.h"
 #include "syscall.h"
 #include "keyboard.h"

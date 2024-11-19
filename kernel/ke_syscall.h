@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #define SYS_READ  0
 #define SYS_WRITE 1
 #define SYS_OPEN  2

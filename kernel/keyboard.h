@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #define REP_WAIT_250   0x0
 #define REP_WAIT_500   0x20
 #define REP_WAIT_750   0x40

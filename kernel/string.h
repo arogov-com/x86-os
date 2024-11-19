@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 // Convert char 'c' to upper case
 unsigned char upperchar(unsigned char c);
 

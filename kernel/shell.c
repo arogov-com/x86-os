@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 // #include "tty.h"
 #include "vtty.h"
 #include "interrupt.h"

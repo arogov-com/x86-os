@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #define outportb(port, value) asm volatile("outb %%al, %%dx"::"a"(value), "d"(port))
 #define outportw(port, value) asm volatile("outb %%ax, %%dx"::"a"(value), "d"(port))
 

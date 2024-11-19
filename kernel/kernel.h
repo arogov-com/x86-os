@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #define KERNEL            0x200000  // Kernel base address
 #define KERNEL_END        0x2FFFFF  // Kernel base address
 

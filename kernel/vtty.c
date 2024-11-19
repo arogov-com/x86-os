@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 #include "vtty.h"
 #include "ioports.h"
 #include "keyboard.h"

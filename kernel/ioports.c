@@ -1,3 +1,5 @@
+// Copyright (C) 2023 Aleksei Rogov <alekzzzr@gmail.com>. All rights reserved.
+
 // #include "ioports.h"
 
 __inline__ void outportb(unsigned short port, unsigned char value) {
